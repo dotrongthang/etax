@@ -118,11 +118,13 @@
 			</tr>
 			</thead>
 			<tbody>
+			<c:forEach var="item" items="${resultDownload}">
 				<tr>
-					<td>${resultDownload.count}</td>
-					<td>${resultDownload.fileName}</td>
-					<td>${resultDownload.size}</td>
+					<td>${item.count}</td>
+					<td>${item.fileName}</td>
+					<td>${item.size}</td>
 				</tr>
+			</c:forEach>
 			</tbody>
 		</table>
 
@@ -146,3 +148,4 @@
 <!-- Latest compiled JavaScript -->
 <%--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>--%>
 <script src="/css/bootstrap.min.js"></script>
+

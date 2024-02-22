@@ -12,20 +12,26 @@ import java.nio.file.StandardCopyOption;
 
 public class FileUploadUtil {
 
-	public static String saveFile(String fileName, MultipartFile multipartFile) throws IOException {
-		Path uploadDirectory = Paths.get("C:\\update\\etax");
+	public static int saveFile(String fileName, MultipartFile multipartFile, String pathUpload) throws IOException {
+		Path uploadDirectory = Paths.get(pathUpload);
+		int result = 0;
 		
-		String fileCode = RandomStringUtils.randomAlphanumeric(8);
+//		String fileCode = RandomStringUtils.randomAlphanumeric(8);
+		System.out.println("Upload page: pathUpload = " + pathUpload);
+
 		
 		try (InputStream inputStream = multipartFile.getInputStream()) {
-			Path filePath = uploadDirectory.resolve(fileCode + "-" + fileName);
-//			Path filePath = uploadDirectory.resolve(fileName);
+//			Path filePath = uploadDirectory.resolve(fileCode + "-" + fileName);
+			System.out.println("Upload page: Start upload file: " + fileName);
+			Path filePath = uploadDirectory.resolve(fileName);
 			Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+			result = 1;
 			
-		} catch (IOException ioe) {
+		} catch (Exception ioe) {
+			ioe.printStackTrace();
 			throw new IOException("Error saving uploaded file: " + fileName, ioe);
 		}
 		
-		return "true";
+		return result;
 	}
 }

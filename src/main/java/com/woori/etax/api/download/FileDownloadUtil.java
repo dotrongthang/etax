@@ -1,5 +1,6 @@
 package com.woori.etax.api.download;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
@@ -11,15 +12,14 @@ import java.nio.file.Paths;
 public class FileDownloadUtil {
 	private Path foundFile;
 
-	private final String FILE_RESULT = "testDown.xlsx";
+//	private final String FILE_RESULT = "result";
 	
-	public Resource getFileAsResource() throws IOException {
-		Path uploadDirectory = Paths.get("C:\\update\\etax");
+	public Resource getFileAsResource(String pathDownload, String resultFileName) throws IOException {
+		Path uploadDirectory = Paths.get(pathDownload);
 		
 		Files.list(uploadDirectory).forEach(file -> {
-			if (file.getFileName().toString().startsWith(FILE_RESULT)) {
+			if (file.getFileName().toString().contains(resultFileName)) {
 				foundFile = file;
-				return;
 			}
 		});
 		
