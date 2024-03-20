@@ -100,7 +100,8 @@ public class FileUploadController {
 		try {
 				try (PrintWriter pw = new PrintWriter(out)) {
 					fileUploadResponseList.stream().forEach(r->{
-						pw.println(PRE_FILE_NAME  + month + "/" + r.getFileName());
+//						pw.println(PRE_FILE_NAME  + month + "/" + r.getFileName());
+						pw.println(PRE_FILE_NAME  + "/" + r.getFileName());
 					});
 				}
 			// Write data to 'out'
@@ -109,13 +110,13 @@ public class FileUploadController {
 		}
 
 		FileUploadResponse responseDown = new FileUploadResponse();
-		responseDown.setFileName(RES_FILE_NM);
-		responseDown.setSize(200);
-		responseDown.setCount(1);
+//		responseDown.setFileName(RES_FILE_NM);
+//		responseDown.setSize(200);
+//		responseDown.setCount(1);
 
 		model.addAttribute("countUpload", fileUploadResponseList.size());
 		model.addAttribute("result", fileUploadResponseList);
-		model.addAttribute("countDownload", 1);
+		model.addAttribute("countDownload", 0);
 
 		model.addAttribute("resultDownload", responseDown);
 

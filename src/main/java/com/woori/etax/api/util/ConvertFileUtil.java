@@ -86,7 +86,7 @@ public class ConvertFileUtil {
 
     }
 
-    public void convertToExcelFile(String csvFileName, String resultName, String delimiter) throws IOException, ParseException {
+    public void convertToExcelFile(String csvFileName, String resultName, String delimiter, String fileBackUp) throws IOException, ParseException {
         try {
             XSSFWorkbook workbook = new XSSFWorkbook();
             XSSFSheet sheet = workbook.createSheet("01_SHTK");
@@ -173,8 +173,8 @@ public class ConvertFileUtil {
 
                 for (int i = 0; i < rowValues.length; i++) {
                     Cell cell = rowD.createCell(i);
-                    if ((i == 6 || i == 7) && rowValues[i] != null && !rowValues[i].isEmpty()){
-                        cell.setCellValue(dfOut.format(dfIn.parse(rowValues[i])));
+                    if ((i == 2) && rowValues[i] != null && !rowValues[i].isEmpty() && rowValues[i].contains("số thuế")){
+                        cell.setCellValue("Mã số doanh nghiệp");
                     }else
                     cell.setCellValue(rowValues[i]);
                 }
@@ -185,12 +185,13 @@ public class ConvertFileUtil {
 //                }
 //        }
 
-        FileOutputStream out = new FileOutputStream(new File("./tmp.xlsx"));
+        FileOutputStream out = new FileOutputStream(new File(fileBackUp));
 //        logger.info("Convert Ip address to location: Start writing to file: " + FILE_OUTPUT);
         FileOutputStream output = new FileOutputStream(new File(resultName));
         workbook2.write(out);
         workbook2.write(output);
         file.close();
+        output.close();
     }
 
 }

@@ -17,6 +17,11 @@
 		margin-top: 10px;
 	}
 
+	div.date_form {
+		margin-bottom: 5px;
+		margin-top: 30px;
+	}
+
 	table.list_tbl01 {
 		position: relative;
 		width: 100%;
@@ -44,18 +49,22 @@
 
 	.scrollit {
 		overflow:scroll;
-		height:300px;
+		height:250px;
+	}
+
+	.ui-datepicker-calendar {
+		display: none;
 	}
 
 </style>
 <body>
 <div class="container">
 	<div class="title_area">
-		<h2>Quản lý báo cáo E-Tax</h2>
+		<h2>Manage E-Tax reports</h2>
 	</div>
 	<div>
 		<div class="title_box">
-			<h4>Vui lòng chọn tất cả các tài liệu liên quan</h4>
+			<h4>Please select all relevant documents</h4>
 		</div>
 		<form action="/uploadFile" enctype="multipart/form-data" method="post">
 			<input type="file" id="file" name="file" class="form-control" multiple="multiple">
@@ -65,7 +74,7 @@
 
 
 		<div class="title_box">
-			<h4>Danh sách file đã tải lên(${countUpload})</h4>
+			<h4>List of uploaded files(${countUpload})</h4>
 		</div>
 
 		<div class="scrollit">
@@ -78,9 +87,9 @@
 
 				<thead>
 				<tr>
-					<th scope="col">Số thứ tự</th>
-					<th scope="col">Tên file</th>
-					<th scope="col">File size</th>
+					<th scope="col">No</th>
+					<th scope="col">File Name</th>
+					<th scope="col">File Size</th>
 				</tr>
 				</thead>
 				<tbody>
@@ -99,10 +108,21 @@
 
 	<div>
 
-		<div class="title_box">
-			<h4>Danh sách file đã xử lý xong(${countDownload})</h4>
+		<div class="date_form">
 		</div>
 
+	<%--		<div class="input-append date" id="datepicker" data-date="02-2012"--%>
+<%--			 data-date-format="mm-yyyy">--%>
+
+<%--			<input  type="text" readonly="readonly" name="date" >--%>
+<%--			<span class="add-on"><i class="icon-th"></i></span>--%>
+<%--		</div>--%>
+
+		<div class="title_box">
+			<h4>List of processed files(${countDownload})</h4>
+		</div>
+
+		<div class="scrollit">
 		<table class="list_tbl01">
 			<colgroup>
 				<col style="width: 20%"/>
@@ -112,9 +132,9 @@
 
 			<thead>
 			<tr>
-				<th scope="col">Số thứ tự</th>
-				<th scope="col">Tên file</th>
-				<th scope="col">File size</th>
+				<th scope="col">No</th>
+				<th scope="col">File Name</th>
+				<th scope="col">File Size</th>
 			</tr>
 			</thead>
 			<tbody>
@@ -125,10 +145,35 @@
 				</tr>
 			</tbody>
 		</table>
+		</div>
 
-		<form action="/downloadFile" enctype="multipart/form-data" method="get">
+		<div class="date_form">
+			<div class="container">
+				<div class="row">
+					<div class="col-2">
+						<label class="title_box">Select Month :</label>
+					</div>
+
+					<div class="col-4">
+						<div class="col-lg-2">
+							<div class='input-group date' id='datetimepicker'>
+								<input type='text' class="form-control" name="selectMonth" id="selectMonth"/>
+								<span class="input-group-addon">
+						<span class="glyphicon glyphicon-calendar">
+						</span>
+					</span>
+							</div>
+						</div>
+					</div>
+
+				</div>
+				<%--				</div>--%>
+			</div>
+		</div>
+
+		<form action="/downloadFile" enctype="multipart/form-data" method="get" id="formDownload">
 			<br>
-			<button type="submit" class="btn btn-primary">Download All</button>
+			<button type="submit" class="btn btn-primary">Download</button>
 		</form>
 	</div>
 </div>
@@ -146,3 +191,41 @@
 <!-- Latest compiled JavaScript -->
 <%--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>--%>
 <script src="/css/bootstrap.min.js"></script>
+
+<%--<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>--%>
+<script src="/js/jquery-ui.min.js"></script>
+
+<%--<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.css" rel="stylesheet">--%>
+<link href="/css/bootstrap-datetimepicker.css" rel="stylesheet">
+
+<%--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment-with-locales.min.js"></script>--%>
+<script src="/js/moment-with-locales.min.js"></script>
+
+<%--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>--%>
+<script src="/js/bootstrap-datetimepicker.min.js"></script>
+
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		var now = new Date();
+		$('#selectMonth').val((now.getMonth() + 1) + "/" + now.getFullYear())
+	});
+
+	$(function () {
+		$('#datetimepicker').datetimepicker({
+			viewMode: 'years',
+			format: 'MM/YYYY'
+		});
+	});
+
+	$('#formDownload').submit(function(){ //listen for submit event
+		var month =  $('#selectMonth').val();
+		$('<input />').attr('type', 'hidden')
+				.attr('name', 'monthD')
+				.attr('value', month)
+				.appendTo('#formDownload');
+		return true;
+	});
+
+</script>
+

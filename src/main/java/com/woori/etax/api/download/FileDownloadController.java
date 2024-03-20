@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
@@ -20,61 +21,73 @@ import java.util.Date;
 @RestController
 public class FileDownloadController {
 
-	@Value("${pathDownload}")
-	private String PATH_DOWNLOAD;
+    @Value("${pathDownload}")
+    private String PATH_DOWNLOAD;
 
-	@Value("${resultFileName}")
-	private String RES_FILE_NM;
+    @Value("${resultFileName}")
+    private String RES_FILE_NM;
 
-	@Value("${resultFileNameCsv}")
-	private String RES_FILE_NM_CSV;
+    @Value("${resultFileNameCsv}")
+    private String RES_FILE_NM_CSV;
 
-	@Value("${delimiter}")
-	private String DELIMITER;
+    @Value("${delimiter}")
+    private String DELIMITER;
 
-	private String pattern = "YYYYMM";
+    private String pattern = "YYYYMM";
 
-	@GetMapping("/downloadFile")
-	public ResponseEntity<?> downloadFile() throws IOException, ParseException {
-		FileDownloadUtil downloadUtil = new FileDownloadUtil();
-		
-		Resource resource = null;
+    @GetMapping("/downloadFile")
+    public ResponseEntity<?> downloadFile(@RequestParam("monthD") String monthD) throws IOException, ParseException {
+        FileDownloadUtil downloadUtil = new FileDownloadUtil();
 
-		//check folder download exists
-		File storedPathD = new File(PATH_DOWNLOAD);
-		if (!storedPathD.exists()){
-			storedPathD.mkdirs();
-		}
+        Resource resource = null;
+        System.out.println(monthD);
 
-		//get time upload
-		Date now = new Date();
-		DateFormat df = new SimpleDateFormat(pattern);
-		String month = df.format(now);
+        //check folder download exists
+        File storedPathD = new File(PATH_DOWNLOAD);
+        if (!storedPathD.exists()) {
+            storedPathD.mkdirs();
+        }
 
-		//create xml file
+        //get time upload
+        String month = "";
+        if (monthD == null || monthD.isEmpty()) {
+            Date now = new Date();
+            DateFormat df = new SimpleDateFormat(pattern);
+            month = df.format(now);
+        } else
+            month = monthD.substring(3, 7) + monthD.substring(0, 2);
+
+        String pathBackup = PATH_DOWNLOAD + month + "/";
+
+        //check folder backup exists
+        File storedPathB = new File(pathBackup);
+        if (!storedPathB.exists()) {
+            storedPathB.mkdirs();
+        }
+
+        //create xml file
 //		File out = new File(PATH_DOWNLOAD + "result.xml");
-		ConvertFileUtil util = new ConvertFileUtil();
+        ConvertFileUtil util = new ConvertFileUtil();
 //		File resFile = new File(PATH_DOWNLOAD + RES_FILE_NM + month + ".xlsx");
-		util.convertToExcelFile(PATH_DOWNLOAD + RES_FILE_NM_CSV + month + ".csv", PATH_DOWNLOAD + RES_FILE_NM + month + ".xlsx", DELIMITER);
+        util.convertToExcelFile(PATH_DOWNLOAD + RES_FILE_NM_CSV + month + ".csv", PATH_DOWNLOAD + RES_FILE_NM + month + ".xlsx", DELIMITER, pathBackup + RES_FILE_NM + month + ".xlsx");
 
 
-		
-		try {
-			resource = downloadUtil.getFileAsResource(PATH_DOWNLOAD, RES_FILE_NM);
-		} catch (IOException e) {
-			return ResponseEntity.internalServerError().build();
-		}
-		
-		if (resource == null) {
-			return new ResponseEntity<>("File not found", HttpStatus.NOT_FOUND);
-		}
-		
-		String contentType = "application/octet-stream";
-		String headerValue = "attachment; filename=\"" + resource.getFilename() + "\"";
-		
-		return ResponseEntity.ok()
-				.contentType(MediaType.parseMediaType(contentType))
-				.header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
-				.body(resource);
-	}
+        try {
+            resource = downloadUtil.getFileAsResource(PATH_DOWNLOAD, RES_FILE_NM + month + ".xlsx");
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+
+        if (resource == null) {
+            return new ResponseEntity<>("File not found", HttpStatus.NOT_FOUND);
+        }
+
+        String contentType = "application/octet-stream";
+        String headerValue = "attachment; filename=\"" + resource.getFilename() + "\"";
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
+                .body(resource);
+    }
 }
