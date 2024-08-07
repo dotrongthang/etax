@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 @RestController
@@ -33,6 +34,9 @@ public class FileDownloadController {
     @Value("${delimiter}")
     private String DELIMITER;
 
+    @Value("${pathUpload}")
+    private String PATH_UPLOAD;
+
     private String pattern = "YYYYMM";
 
     @GetMapping("/downloadFile")
@@ -48,14 +52,18 @@ public class FileDownloadController {
             storedPathD.mkdirs();
         }
 
+        String monthM = monthD.substring(monthD.length() - 7);
         //get time upload
         String month = "";
-        if (monthD == null || monthD.isEmpty()) {
+        if (monthM == null || monthM.isEmpty()) {
             Date now = new Date();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(now);
+            calendar.add(Calendar.DATE, -30);
             DateFormat df = new SimpleDateFormat(pattern);
-            month = df.format(now);
+            month = df.format(calendar.getTime());
         } else
-            month = monthD.substring(3, 7) + monthD.substring(0, 2);
+            month = monthM.substring(3, 7) + monthM.substring(0, 2);
 
         String pathBackup = PATH_DOWNLOAD + month + "/";
 
@@ -69,11 +77,11 @@ public class FileDownloadController {
 //		File out = new File(PATH_DOWNLOAD + "result.xml");
         ConvertFileUtil util = new ConvertFileUtil();
 //		File resFile = new File(PATH_DOWNLOAD + RES_FILE_NM + month + ".xlsx");
-        util.convertToExcelFile(PATH_DOWNLOAD + RES_FILE_NM_CSV + month + ".csv", PATH_DOWNLOAD + RES_FILE_NM + month + ".xlsx", DELIMITER, pathBackup + RES_FILE_NM + month + ".xlsx");
+        util.convertToExcelFile(PATH_UPLOAD + month + ".csv", PATH_DOWNLOAD + RES_FILE_NM + month + ".xlsx", DELIMITER, pathBackup + RES_FILE_NM + month + ".xlsx");
 
 
         try {
-            resource = downloadUtil.getFileAsResource(PATH_DOWNLOAD, RES_FILE_NM + month + ".xlsx");
+            resource = downloadUtil.getFileAsResource(pathBackup, RES_FILE_NM + month + ".xlsx");
         } catch (IOException e) {
             return ResponseEntity.internalServerError().build();
         }

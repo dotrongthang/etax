@@ -210,13 +210,17 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		var now = new Date();
-		$('#selectMonth').val((now.getMonth() + 1) + "/" + now.getFullYear())
+		if(now.getMonth() === 0){
+			$('#selectMonth').val("12/" + (now.getFullYear() - 1))
+		}else {
+			$('#selectMonth').val((now.getMonth()) + "/" + now.getFullYear())
+		}
 	});
 
 	$(function () {
 		$('#datetimepicker').datetimepicker({
 			viewMode: 'years',
-			format: 'MM/YYYY'
+			format: 'MM/yyyy'
 		});
 	});
 
